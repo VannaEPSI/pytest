@@ -2,6 +2,7 @@ import collections
 
 from src.services.book_fetcher_service import BookFetcherService
 from src.services.book_service import BookService
+from Tools.outils import comparaison_tableau
 
 
 def test_list_book_ids(monkeypatch):
@@ -68,17 +69,63 @@ def test_list_book_ids_empty(monkeypatch):
 
     assert ids_empty == ['', 'aaa-002']
 
-def test_list_authors_list(monkeypatch):
+def test_list_authors_with_no_first_name(monkeypatch):
     def mock_get_books(*args):
         return [
             {'id': 'aaa-001', 'name': 'Origine', 'author': {'firstname': 'Dan', 'lastname': 'Brown'}},
             {'id': 'aaa-002', 'name': 'Anges & Démons', 'author': {'firstname': 'Dan', 'lastname': 'Brown'}},
-            {'id': 'aaa-003', 'name': 'Vanna bat Thanh au babyfoot', 'author': {'firstname': 'VanVan', 'lastname': 'Lyly'}},
+            {'id': 'aaa-003', 'name': 'Zen', 'author': {'firstname': '', 'lastname': 'Jaegger'}},
         ]
 
     monkeypatch.setattr(BookFetcherService, 'get_books', mock_get_books)
 
     book_service = BookService(book_fetcher_service=BookFetcherService())
-    authors = book_service.list_books_authors()
 
-    assert collections.Counter(authors) == collections.Counter(['Brown Dan', "Lyly VanVan"])
+    authors = book_service.list_books_authors()
+    assert comparaison_tableau(authors) == comparaison_tableau(['Brown Dan', 'Jaegger '])
+
+
+def test_list_authors_with_no_author(monkeypatch):
+    def mock_get_books(*args):
+        return [
+            {'id': 'aaa-001', 'name': 'Origine', 'author': {'firstname': '', 'lastname': ''}},
+            {'id': 'aaa-002', 'name': 'vava', 'author': {'firstname': '', 'lastname': ''}},
+        ]
+
+    monkeypatch.setattr(BookFetcherService, 'get_books', mock_get_books)
+
+    book_service = BookService(book_fetcher_service=BookFetcherService())
+
+    authors = book_service.list_books_authors()
+    assert comparaison_tableau(authors) == comparaison_tableau([' '])
+
+
+def test_list_authors_one_book(monkeypatch):
+    def mock_get_books(*args):
+        return [
+            {'id': 'aaa-001', 'name': 'Origine', 'author': {'firstname': 'Dan', 'lastname': 'Brown'}}
+        ]
+
+    monkeypatch.setattr(BookFetcherService, 'get_books', mock_get_books)
+
+    book_service = BookService(book_fetcher_service=BookFetcherService())
+
+    authors = book_service.list_books_authors()
+    assert comparaison_tableau(authors) == comparaison_tableau(['Brown Dan'])
+
+
+def test_list_authors_one_author(monkeypatch):
+    def mock_get_books(*args):
+        return [
+            {'id': 'aaa-001', 'name': 'Origine', 'author': {'firstname': 'Dan', 'lastname': 'Brown'}},
+            {'id': 'aaa-002', 'name': 'vava', 'author': {'firstname': 'Dan', 'lastname': 'Brown'}},
+            {'id': 'aaa-003', 'name': 'tata', 'author': {'firstname': 'Dan', 'lastname': 'Brown'}},
+
+        ]
+
+    monkeypatch.setattr(BookFetcherService, 'get_books', mock_get_books)
+
+    book_service = BookService(book_fetcher_service=BookFetcherService())
+
+    authors = book_service.list_books_authors()
+    assert comparaison_tableau(authors) == comparaison_tableau(['Brown Dan'])
