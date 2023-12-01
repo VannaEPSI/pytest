@@ -1,5 +1,3 @@
-import collections
-
 from src.services.book_fetcher_service import BookFetcherService
 from src.services.book_service import BookService
 from Tools.outils import comparaison_tableau
