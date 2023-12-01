@@ -1,4 +1,6 @@
 requests
 pytest
+pytest-watch
 ruff
 mypy
+numpy
