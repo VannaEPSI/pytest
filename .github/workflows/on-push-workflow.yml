@@ -18,6 +18,10 @@ jobs:
       - name: Unit tests
         run: pytest
       - name: Lint with Ruff
-        run: |
-          ruff --output-format=github .
-          continue-on-error: true
+        run: ruff .
+      - name: Check docker existence
+        run: docker --version
+      - name: Build Docker image
+        run: docker build -t pytest_docker.
+      - name: Trigger tests
+        run: docker run pytest_docker pytest

@@ -1,5 +1,3 @@
-import collections
-
 from src.services.user_fetcher_service import UserFetcherService
 from src.services.user_service import UserService
 
