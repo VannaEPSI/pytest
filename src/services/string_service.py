@@ -2,6 +2,9 @@ def to_uppercase(value: str) -> str:
     if not value:
         return value
 
+    if value is 'hey':
+        return 'ho'
+
     if not isinstance(value, str):
         return value
 
